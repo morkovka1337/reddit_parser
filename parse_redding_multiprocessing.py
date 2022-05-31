@@ -39,8 +39,8 @@ def parse_subreddit_filter(subr, filter):
 
 def check_correctness(subr, filter):
 
-    reddit = praw.Reddit(client_id='43CpG446wyP-WiKGtRZmZw',
-                         client_secret='yORJ6KQtTYYOhhLpLesUrVRzxyMX9w',
+    reddit = praw.Reddit(client_id=client_id,
+                         client_secret=client_secret,
                          user_agent='Reddit stocks analysis big data 2022',
                          # password='',
                          # username=''

@@ -9,7 +9,7 @@ import os
 from cridentials import client_id, client_secret
 
 CHECK_CORRECTNESS=False
-CORE_MULTIPLICATOR = 4
+CORE_MULTIPLICATOR = 2
 
 def parse_subreddit_filter(subr, filter):
 
@@ -21,7 +21,7 @@ def parse_subreddit_filter(subr, filter):
                          )
     subreddit = reddit.subreddit(subr)
     submissions = getattr(subreddit, filter)(limit=None)
-    df = pd.DataFrame(columns=['Title', 'Post text', 'Comments'])
+    df = pd.DataFrame(columns=['Post created', 'Title', 'Post text', 'Comments'])
     i = 0
     print(f'Processing {subr}.{filter}')
     for submission in submissions:
@@ -31,11 +31,11 @@ def parse_subreddit_filter(subr, filter):
                 continue
             comm = comment.list()
 
-            df.loc[i] = [submission.title] + \
+            df.loc[i] = [submission.created_utc] + [submission.title] + \
                 [submission.selftext] + [comm.body]
             i += 1
-
-    df.to_json(f'{subr}_{filter}.json')
+    print(f'Saving {subr}_{filter}_with_date.json')
+    df.to_json(f'outputs_with_date/{subr}_{filter}_with_date.json')
 
 def check_correctness(subr, filter):
 
@@ -97,8 +97,7 @@ if __name__ == '__main__':
     if CHECK_CORRECTNESS:
         for elem in subreddits_filters:
             check_correctness(*elem)
-
-    pool = mp.Pool(processes=mp.cpu_count() * CORE_MULTIPLICATOR)
-    result = pool.starmap(parse_subreddit_filter, inputs)
+    pool = mp.Pool(processes=int(mp.cpu_count()  * CORE_MULTIPLICATOR))
+    result = pool.starmap(parse_subreddit_filter, all_inputs)
 
 
